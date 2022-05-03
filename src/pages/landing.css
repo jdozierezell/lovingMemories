@@ -1,0 +1,57 @@
+#grid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 450px 1fr;
+  top:0;
+  height:100vh;
+  margin-top: 0;
+}
+
+#areaA {
+
+/*   background-color: lime; */
+   height: 100%;
+}
+
+#areaB {
+
+/*   background-color: yellow; */
+   height: 100%;
+}
+
+@media only screen and (max-width: 480px) {
+  #grid {
+      display: block;
+      width: 100%;
+      height: calc(100vh - 149px)!important;
+      grid-template-columns: none;
+      margin-top:80px!important;
+  }
+
+  #areaA {
+    height: 60%!important;
+  }
+
+  #areaB {
+    height: 40%!important;
+  }
+  
+}
+
+@media only screen and (max-width: 998px) {
+  #grid {
+      display: block;
+      width: 100%;
+      height: calc(100vh - 180px);
+      grid-template-columns: none;
+      margin-top:111px;
+  }
+
+  #areaA {
+    height: 60%;
+  }
+
+  #areaB {
+    height: 40%;
+  }
+}

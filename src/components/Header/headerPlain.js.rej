@@ -1,0 +1,10 @@
+diff a/app/src/components/Header/headerPlain.js b/app/src/components/Header/headerPlain.js	(rejected hunks)
+@@ -146,8 +146,6 @@
+   useEffect(() => {
+ 
+     let details = {}
+-    if(state.data != undefined) {
+-      handleAPIPost('user/check/new/notifications', details, state.data.auth_token, handleNotificationReadSuccess, handleNotificationReadErrors);
+     if (isLoggedIn()) {
+       if(state.data != undefined) {
+         handleAPIPost('user/check/new/notifications', details, state.data.auth_token, handleNotificationReadSuccess, handleNotificationReadErrors);

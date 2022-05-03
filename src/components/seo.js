@@ -1,16 +1,16 @@
 /**
- * SEO component that queries for data with
+ * Seo component that queries for data with
  *  Gatsby's useStaticQuery React hook
  *
  * See: https://www.gatsbyjs.com/docs/use-static-query/
  */
 
-import * as React from "react"
+import React from "react"
 import PropTypes from "prop-types"
 import { Helmet } from "react-helmet"
 import { useStaticQuery, graphql } from "gatsby"
 
-function Seo({ description, lang, meta, title }) {
+function Seo({ description, lang, meta, title, image }) {
   const { site } = useStaticQuery(
     graphql`
       query {
@@ -25,8 +25,8 @@ function Seo({ description, lang, meta, title }) {
     `
   )
 
-  const metaDescription = description || site.siteMetadata.description
-  const defaultTitle = site.siteMetadata?.title
+  const metaDescription = description || site.siteMetadata.description;
+  const defaultTitle = site.siteMetadata?.title;
 
   return (
     <Helmet
@@ -45,7 +45,27 @@ function Seo({ description, lang, meta, title }) {
           content: title,
         },
         {
+          property: `og:image`,
+          content: image,
+        },
+        {
+          property: `twitter:image`,
+          content: image,
+        },
+        {
+          property: `fb:app_id`,
+          content: '337800388276409',
+        },
+        {
+          property: `og:url`,
+          content: 'https://lovingmemories.afsp.org/',
+        },
+        {
           property: `og:description`,
+          content: metaDescription,
+        },
+        {
+          property: `twitter:description`,
           content: metaDescription,
         },
         {
@@ -54,7 +74,7 @@ function Seo({ description, lang, meta, title }) {
         },
         {
           name: `twitter:card`,
-          content: `summary`,
+          content: `summary_large_image`,
         },
         {
           name: `twitter:creator`,
