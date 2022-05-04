@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import {StateMachineProvider} from "little-state-machine";
 
 import Layout from "../components/Layout"
-import AddFriendMemory from "../components/AddFriendMemory"
+import ReviewFriendMemory from "../components/AddMemory/ReviewFriendMemory"
 import Seo from "../components/seo"
 
 
@@ -21,8 +21,8 @@ const PreviewMemoryPage = () => {
 
             <StateMachineProvider>
                 <Layout>
-                    <Seo title="Friend Add Memory" image="https://lovingmemories.afsp.org/svg/afsp-memories-social.jpg"/>
-                    <AddFriendMemory/>
+                    <Seo title="Review Friend Memory" image="https://afsp-loving-memories.netlify.app/svg/afsp-memories-social.jpg"/>
+                    <ReviewFriendMemory/>
                 </Layout>
             </StateMachineProvider>
 

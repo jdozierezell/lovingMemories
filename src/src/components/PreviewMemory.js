@@ -292,7 +292,7 @@ const PreviewMemory = () => {
 
                 const faceFeatures = `width=600, height=300, left=${pos.x}, top=${pos.y}`;
                 let app = "337800388276409";
-                let shareFB = 'https://www.facebook.com/dialog/share?app_id=' + app + '&display=popup&picture=https://loving-memories.netlify.app/svg/afsp-memories-social.jpg&quote=' + postTitle + '-' + postDescription+ '&href=https://lovingmemories.afsp.org/&redirect_uri=' + siteRedirect;
+                let shareFB = 'https://www.facebook.com/dialog/share?app_id=' + app + '&display=popup&picture=https://loving-memories.netlify.app/svg/afsp-memories-social.jpg&quote=' + postTitle + '-' + postDescription+ '&href=https://afsp-loving-memories.netlify.app/&redirect_uri=' + siteRedirect;
                 window.open(shareFB, "_blank",faceFeatures);
                 break;
             case "twitter":
@@ -300,7 +300,7 @@ const PreviewMemory = () => {
                 const tweetFeatures = `width=600, height=300, left=${pos.x}, top=${pos.y}`;
                 let hashtags = '&hashtags=InMemoryOf'
                 let shareTT = 'https://twitter.com/intent/tweet?text=' + postTitle + '-' + postDescription;
-                let link = '&url=https://lovingmemories.afsp.org/';
+                let link = '&url=https://afsp-loving-memories.netlify.app/';
                 let tweetURL = shareTT + hashtags + link;
                 window.open(tweetURL, "_blank",tweetFeatures);
                 break;
@@ -452,7 +452,7 @@ const PreviewMemory = () => {
                 <div className="relative memory-module"  theme={bgThemeCol}>
                     <div className={`memory-tools ${toolPanel} ${bgThemeTemp}`}>
                         <Header toLink={"/"} title={"Preview"}/>
-                        <Seo title={postTitle} image="https://lovingmemories.afsp.org/svg/afsp-memories-social.jpg"/>
+                        <Seo title={postTitle} image="https://afsp-loving-memories.netlify.app/svg/afsp-memories-social.jpg"/>
                         <div className="progress-bar" style={progressBarStyle}/>
 
                         {(publicShare === 'public') ? (
