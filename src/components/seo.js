@@ -58,7 +58,7 @@ function Seo({ description, lang, meta, title, image }) {
         },
         {
           property: `og:url`,
-          content: 'https://afsp-loving-memories.netlify.app/',
+          content: 'https://lovingmemories.afsp.org/',
         },
         {
           property: `og:description`,

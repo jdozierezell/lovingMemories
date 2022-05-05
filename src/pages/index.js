@@ -46,7 +46,7 @@ const IndexPage = () => {
 
                     
 
-                    <Seo title="Home" image="https://afsp-loving-memories.netlify.app/svg/afsp-memories-social.jpg"/>
+                    <Seo title="Home" image="https://lovingmemories.afsp.org/svg/afsp-memories-social.jpg"/>
 
 
                     <div id='grid' className='h-screen gap-0 w-screen'>

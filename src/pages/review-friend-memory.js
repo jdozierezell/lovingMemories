@@ -21,7 +21,7 @@ const PreviewMemoryPage = () => {
 
             <StateMachineProvider>
                 <Layout>
-                    <Seo title="Review Friend Memory" image="https://afsp-loving-memories.netlify.app/svg/afsp-memories-social.jpg"/>
+                    <Seo title="Review Friend Memory" image="https://lovingmemories.afsp.org/svg/afsp-memories-social.jpg"/>
                     <ReviewFriendMemory/>
                 </Layout>
             </StateMachineProvider>
