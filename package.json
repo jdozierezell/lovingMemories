@@ -5,10 +5,10 @@
   "version": "0.3.0",
   "author": "Kostas Vrouvas <hello@kosvrouvas.com>",
   "dependencies": {
-    "@emotion/react": "^11.4.1",
-    "@emotion/styled": "^11.3.0",
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
     "@hookform/resolvers": "^2.8.3",
-    "@mui/material": "^5.0.3",
+    "@mui/material": "^5.8.5",
     "antd": "^4.16.13",
     "antd-img-crop": "^3.16.0",
     "autoprefixer": "^10.2.6",
