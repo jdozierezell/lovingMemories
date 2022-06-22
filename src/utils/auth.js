@@ -1,5 +1,4 @@
-
-import axios from 'axios';
+import axios from "axios"
 
 /* Check if call is made from a browser window */
 const isBrowser = typeof window !== `undefined`
@@ -8,176 +7,171 @@ const isBrowser = typeof window !== `undefined`
 const baseURL = "https://afsp-loving-memories.herokuapp.com/api/"
 export const baseImageURL = "https://afsp-loving-memories.herokuapp.com/"
 
-
-
 /* Getter and Setter for User */
 
 const getUser = () =>
-    window.localStorage.userData
-        ? JSON.parse(window.localStorage.userData)
-        : {}
+  window.localStorage.userData ? JSON.parse(window.localStorage.userData) : {}
 
 const setUser = user => (window.localStorage.userData = JSON.stringify(user))
 const setUserID = user => (window.localStorage.userData = JSON.stringify(user))
 
-export const handleAPIPostPublic = async (method, details, handleSuccess, handleErrors) => {
+export const handleAPIPostPublic = async (
+  method,
+  details,
+  handleSuccess,
+  handleErrors
+) => {
+  let headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  }
 
+  if (!isBrowser) return false
 
-    let headers= {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-    };
-
-    if (!isBrowser) return false;
-
-    await fetch(baseURL+method, {
-        method:'POST',
-        mode:'cors',
-        headers:headers,
-        body:JSON.stringify(details)
+  await fetch(baseURL + method, {
+    method: "POST",
+    mode: "cors",
+    headers: headers,
+    body: JSON.stringify(details),
+  })
+    .then(res => {
+      if (!res.ok) {
+        res.json().then(text => {
+          handleErrors(text)
+        })
+      }
+      return res.json()
     })
-        .then(res => {
-            if(!res.ok) {
-                res.json().then(text => {
-                    handleErrors(text);
-                })
-            }
-            return res.json();
-        })
-        .then(data => {
-            handleSuccess(data)
-        })
-        .catch((error) => {
+    .then(data => {
+      handleSuccess(data)
+    })
+    .catch(error => {})
 
-        });
-
-    return false;
+  return false
 }
 
 /* Global API CALL Method */
-export const handleAPIPost = async (method, details, user, handleSuccess, handleErrors) => {
+export const handleAPIPost = async (
+  method,
+  details,
+  user,
+  handleSuccess,
+  handleErrors
+) => {
+  let headers
 
-    let headers;
-
-    /* set token in here */
-    if(user.token) {
-        headers= {
-            'Accept': 'application/json',
-            'Content-Type':'application/json',
-            'Authorization': `Bearer ${user.token}`,
-        };
+  /* set token in here */
+  if (user.token) {
+    headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${user.token}`,
     }
-    else {
-        headers= {
-            'Accept': 'application/json',
-            'Content-Type':'application/json',
-        };
+  } else {
+    headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
     }
+  }
 
-    if (!isBrowser) return false;
+  if (!isBrowser) return false
 
-       await fetch(baseURL+method, {
-        method:'POST',
-        mode:'cors',
-        headers:headers,
-        body:JSON.stringify(details)
-    })
-        .then(res => {
-            //console.log(res);
-            //console.log(res.ok);
-            let response= res.json();
-            if(res.ok===false) {
-                response.then(text => {
-                    //console.log("error");
-                    handleErrors(text);
-                })
-            }
-            else
-            {
-                response.then(text => {
-                    //console.log("success");
-                    handleSuccess(text);
-                })
-            }
-
+  await fetch(baseURL + method, {
+    method: "POST",
+    mode: "cors",
+    headers: headers,
+    body: JSON.stringify(details),
+  })
+    .then(res => {
+      console.log(res)
+      //console.log(res.ok);
+      let response = res.json()
+      if (res.ok === false) {
+        response.then(text => {
+          //console.log("error");
+          handleErrors(text)
         })
+      } else {
+        response.then(text => {
+          //console.log("success");
+          handleSuccess(text)
+        })
+      }
+    })
+    .catch(error => {
+      handleErrors()
+      console.log(error)
+    })
 
-        .catch((error) => {
-            //console.log(error);
-        });   
-
-    return false;
+  return false
 }
 
 /* Global API CALL Method */
 export const handleAPIFetch = async (method, handleSuccess, handleErrors) => {
+  let headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  }
 
+  if (!isBrowser) return false
 
-    let headers= {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-    };
-
-    if (!isBrowser) return false;
-
-    await fetch(baseURL+method, {
-        method:'POST',
-        mode:'cors',
-        headers:headers,
+  await fetch(baseURL + method, {
+    method: "POST",
+    mode: "cors",
+    headers: headers,
+  })
+    .then(res => {
+      if (!res.ok) {
+        res.json().then(text => {
+          handleErrors(text)
+        })
+      }
+      return res.json()
     })
-        .then(res => {
-            if(!res.ok) {
-                res.json().then(text => {
-                    handleErrors(text);
-                })
-            }
-            return res.json();
-        })
-        .then(data => {
-            handleSuccess(data)
-        })
-        .catch((error) => {
+    .then(data => {
+      handleSuccess(data)
+    })
+    .catch(error => {})
 
-        });
-
-    return false;
+  return false
 }
 
-export const handleAPIGet = async (method, handleSuccess, handleErrors, handleErrorCode) => {
+export const handleAPIGet = async (
+  method,
+  handleSuccess,
+  handleErrors,
+  handleErrorCode
+) => {
+  let headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  }
 
+  if (!isBrowser) return false
 
-    let headers= {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-    };
-
-    if (!isBrowser) return false;
-
-    await fetch(baseURL+method, {
-        method:'GET',
-        mode:'cors',
-        headers:headers,
+  await fetch(baseURL + method, {
+    method: "GET",
+    mode: "cors",
+    headers: headers,
+  })
+    .then(res => {
+      if (!res.ok) {
+        res.json().then(text => {
+          ////console.log(res)
+          handleErrors(text, res)
+        })
+      }
+      return res.json()
     })
-        .then(res => {
-            if(!res.ok) {
-                res.json().then(text => {
-                    ////console.log(res)
-                    handleErrors(text, res);
-                })
-            }
-            return res.json();
-        })
-        .then(data => {
-            handleSuccess(data)
-        })
-        .catch((error) => {
+    .then(data => {
+      handleSuccess(data)
+    })
+    .catch(error => {})
 
-        });
-
-    return false;
+  return false
 }
 /* Get Current User Details */
 /*
@@ -194,8 +188,8 @@ export const getCurrentUser = () => isBrowser && getUser()
       token:data.token
     })
 */
-export const setCurrentUser = (val) => {
-    setUser(val)
+export const setCurrentUser = val => {
+  setUser(val)
 }
 /*
   SetCurrent user details as an obj
@@ -204,49 +198,46 @@ export const setCurrentUser = (val) => {
       user_id:data.user_id
     })
 */
-export const setCurrentUserName = (val) => {
-    setUserID(val)
+export const setCurrentUserName = val => {
+  setUserID(val)
 }
 
 /*
   Check if the user is Logged in by checking if session token exists
 */
 export const isLoggedIn = () => {
-    if (!isBrowser) return false
+  if (!isBrowser) return false
 
-    const user = getUser()
+  const user = getUser()
 
-    return !!user.token
+  return !!user.token
 }
 
 /*git
   Get Current user session token
 */
 export const getSessionToken = () => {
-    if (!isBrowser) return false
+  if (!isBrowser) return false
 
-    const user = getUser()
+  const user = getUser()
 
-    return user.token
+  return user.token
 }
 
 /*
   Logout Current User
 */
 export const logout = callback => {
+  if (!isBrowser) return
+  //setUser({})
+  window.localStorage.clear()
 
-    if (!isBrowser) return
-    //setUser({})
-    window.localStorage.clear();
-    
-    callback()
+  callback()
 }
-
 
 /*
   isUser details empty
 */
 export const userCheck = user => {
-
-    return JSON.stringify(user) !== '{}';
+  return JSON.stringify(user) !== "{}"
 }
