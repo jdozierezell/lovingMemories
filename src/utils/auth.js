@@ -1,5 +1,3 @@
-import axios from "axios"
-
 /* Check if call is made from a browser window */
 const isBrowser = typeof window !== `undefined`
 

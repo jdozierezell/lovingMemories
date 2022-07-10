@@ -11,7 +11,7 @@ import "antd/dist/antd.css"
 
 import { navigate } from "gatsby"
 
-import {message, Avatar, Spin, Card } from "antd"
+import { Avatar, Spin, Card, Result, Button, Popconfirm } from "antd"
 import { IoIosAdd } from "react-icons/io"
 import { HiOutlinePlus } from "react-icons/hi"
 import { LoadingOutlined } from "@ant-design/icons"
@@ -20,35 +20,73 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons"
 
 import InfoModalComp from "./InfoModalComp"
 
-const { Meta } = Card
+/* Popconfirm refused to hide cancel button, so we're doing it with CSS */
+import "./popconfirm.css"
+
+/* Check max local storage */
+const getLocalStorageMaxSize = error => {
+  if (localStorage) {
+    var max = 10 * 1024 * 1024,
+      i = 64,
+      string1024 = "",
+      string = "",
+      // generate a random key
+      testKey = "size-test-" + Math.random().toString(),
+      minimalFound = 0,
+      error = error || 25e4
+
+    // fill a string with 1024 symbols / bytes
+    while (i--) string1024 += 1e16
+
+    i = max / 1024
+
+    // fill a string with 'max' amount of symbols / bytes
+    while (i--) string += string1024
+
+    i = max
+
+    // binary search implementation
+    while (i > 1) {
+      try {
+        localStorage.setItem(testKey, string.substr(0, i))
+        localStorage.removeItem(testKey)
+
+        if (minimalFound < i - error) {
+          minimalFound = i
+          i = i * 1.5
+        } else break
+      } catch (e) {
+        localStorage.removeItem(testKey)
+        i = minimalFound + (i - minimalFound) / 2
+      }
+    }
+
+    return minimalFound
+  }
+}
 
 const AddMemories = props => {
   const { state, actions } = useStateMachine({ updateAction })
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setError,
-    setValue,
-    getValues,
-    formState: { errors, isValid },
-  } = useForm({
+  const { register, handleSubmit, reset, setValue } = useForm({
     mode: "onChange",
   })
 
   const [favorites, setFavorites] = useState([])
 
-  const [imageVal, setImageVal] = useState('')
+  const [imageVal, setImageVal] = useState("")
 
   const [loading, setLoading] = useState(false)
+
+  const [uploadError, setUploadError] = useState(false)
+  const [addImageError, setAddImageError] = useState(false)
 
   const loadingIcon = <LoadingOutlined style={{ fontSize: 50 }} spin />
 
   const [userName, setUserName] = useState("")
 
   const [isFirstLoadMemory, setIsFirstLoadMemory] = useState(false)
-  const [isFirstLoadImage, setIsFirstLoadImage] = useState(false)
+  const [isFirstLoadImage] = useState(false)
 
   const fileInputRef = useRef()
 
@@ -59,7 +97,6 @@ const AddMemories = props => {
   const messagesStartRef = useRef(null)
 
   const addMemoryToList = data => {
-
     //alert(1);
 
     let createNewObj = {
@@ -98,10 +135,17 @@ const AddMemories = props => {
   const goBack = data => {
     /* API REQUEST HERE */
     setLoading(true)
-
     let values = {
       favorites: favorites,
       memory_access_token: state.data.access_token,
+    }
+
+    const strigified = JSON.stringify(values)
+
+    if (strigified.length > getLocalStorageMaxSize()) {
+      setLoading(false)
+      setUploadError(true)
+      return
     }
 
     /* post to API */
@@ -124,22 +168,32 @@ const AddMemories = props => {
 
   const handleChangeInput = e => {
     let file = e.target.files[0]
+    let fileLength
     const reader = new FileReader()
     reader.onloadend = result => {
       setImageVal(result.target.result)
+      fileLength = result.target.result.length
+      if (result.target.result.length > getLocalStorageMaxSize()) {
+        setAddImageError(true)
+        return "false"
+      }
     }
-    reader.readAsDataURL(file)
+    if (fileLength > getLocalStorageMaxSize()) {
+      setAddImageError(true)
+      return "false"
+    } else {
+      reader.readAsDataURL(file)
+    }
   }
 
   const wordCount = e => {
     let currentText = e.target.value
     let count = currentText.length
-    
-    if(count<3) {
-      setIsFirstLoadMemory(true);
-    }
-    else {
-      setIsFirstLoadMemory(false);
+
+    if (count < 3) {
+      setIsFirstLoadMemory(true)
+    } else {
+      setIsFirstLoadMemory(false)
     }
 
     setCharCount(count)
@@ -164,10 +218,10 @@ const AddMemories = props => {
   const addMemoryButtonDisabled = () => {
     return (
       <div className="text-left mb-10">
-
         <button
           className=" flex flex-wrap items-start justify-between px-6 py-3 text-xs text-bold leading-none bg-transparent text-base text-afsp-blue hover:text-afsp-blue-dark lg:mt-0 opacity-40"
-          disabled>
+          disabled
+        >
           <HiOutlinePlus size={24} />{" "}
           <span className="ml-2">Add Memory to list </span>
         </button>
@@ -175,16 +229,28 @@ const AddMemories = props => {
     )
   }
 
+  const confirm = e => {
+    setAddImageError(false)
+  }
 
   const addMemoryButton = () => {
     return (
       <div className="text-left mb-10">
-
-        <button
-          className=" flex flex-wrap items-start justify-between px-6 py-3 text-xs text-bold leading-none bg-transparent text-base text-afsp-blue hover:text-afsp-blue-dark lg:mt-0 "
-        >
-          <HiOutlinePlus size={24} />{" "}
-          <span className="ml-2">Add your Memory to the list  </span>
+        <button className=" flex flex-wrap items-start justify-between px-6 py-3 text-xs text-bold leading-none bg-transparent text-base text-afsp-blue hover:text-afsp-blue-dark lg:mt-0 ">
+          <HiOutlinePlus size={24} /> {console.log(addImageError)}
+          {addImageError && (
+            <Popconfirm
+              title="Are you sure to delete this task?"
+              okText="Yes"
+              onConfirm={confirm}
+              showCancel={false}
+            >
+              <span className="ml-2">Add your Memory to the list </span>
+            </Popconfirm>
+          )}
+          {!addImageError && (
+            <span className="ml-2">Add your Memory to the list </span>
+          )}
         </button>
       </div>
     )
@@ -207,16 +273,11 @@ const AddMemories = props => {
   }
 
   const getFormValidation = () => {
-
-    if(imageVal.length < 3 || charCount<1)
-    {
-      return "false";
+    if (imageVal.length < 3 || charCount < 1) {
+      return "false"
+    } else {
+      return "true"
     }
-    else {
-      return "true";
-    }
-
-    
   }
 
   useEffect(() => {
@@ -231,6 +292,17 @@ const AddMemories = props => {
       spinning={loading}
       indicator={loadingIcon}
     >
+      {uploadError && (
+        <Result
+          status="warning"
+          title="There are some problems with your operation."
+          extra={
+            <Button type="primary" key="console">
+              Go Console
+            </Button>
+          }
+        />
+      )}
       <Header
         goBack={true}
         gobackUrl={"/in-memory-of"}
@@ -251,33 +323,31 @@ const AddMemories = props => {
                 <div ref={messagesStartRef} />
 
                 <div className="w-full">
-                  <textarea                  
+                  <textarea
                     maxLength={140}
                     className="border-b-2 border-0 appearance-none w-full py-2 text-gray-900 leading-tight outline-none"
                     id="name"
                     name="name"
                     type="text"
                     placeholder="Your Memory"
-                    {...register("name")}                    
+                    {...register("name")}
                     onChange={e => wordCount(e)}
                   />
                   <span className="block w-full text-right">
                     {charCount}/140
-                  </span>                  
+                  </span>
 
                   {/* {charCount >= 2 ? ( */}
 
-                   {isFirstLoadMemory === false ? (
-                      <>
-                    
-                      </>
-                    ) : (
-                      <>
-                        <p className="text-pink-500 text-xs -mt-4">Memory meaning is required to add to list</p>
-                      </>
-                    )}
-                 
-                  
+                  {isFirstLoadMemory === false ? (
+                    <></>
+                  ) : (
+                    <>
+                      <p className="text-pink-500 text-xs -mt-4">
+                        Memory meaning is required to add to list
+                      </p>
+                    </>
+                  )}
                 </div>
                 <div className="w-full -mt-5 mb-8">
                   <div className="flex flex-wrap">
@@ -293,15 +363,33 @@ const AddMemories = props => {
                         Update <br /> Memory Photo
                       </p>
                     </button>
-                    <button
-                      className="text-center mx-0"
-                      onClick={e => {
-                        e.preventDefault()
-                        fileInputRef.current.click()
-                      }}
-                    >
-                      <img className="w-auto h-40" src={imageVal} alt="" />
-                    </button>
+                    {addImageError && (
+                      <Popconfirm
+                        title="Are you sure to delete this task?"
+                        okText="Yes"
+                        onConfirm={confirm}
+                        showCancel={false}
+                      >
+                        <button
+                          className="text-center mx-0"
+                          onClick={e => {
+                            e.preventDefault()
+                            fileInputRef.current.click()
+                          }}
+                        ></button>
+                      </Popconfirm>
+                    )}
+                    {!addImageError && (
+                      <button
+                        className="text-center mx-0"
+                        onClick={e => {
+                          e.preventDefault()
+                          fileInputRef.current.click()
+                        }}
+                      >
+                        <img className="w-auto h-40" src={imageVal} alt="" />
+                      </button>
+                    )}
                   </div>
                   <input
                     ref={fileInputRef}
@@ -312,32 +400,25 @@ const AddMemories = props => {
                     id="image"
                   />
                 </div>
-              </div>       
+              </div>
 
-              
-              
               {/* {imageVal.length >= 2 ? ( */}
 
               {isFirstLoadImage === false ? (
-                <>
-              
-                </>
+                <></>
               ) : (
                 <>
-                  <p className="text-pink-500 text-xs -mt-4">Memory image is required to add to list</p>
-                </>
-              )}
-              
-              { getFormValidation() == "false" ? (
-                <>
-                {addMemoryButtonDisabled()}
-                </>
-              ) : (
-                <>
-                  {addMemoryButton()}
+                  <p className="text-pink-500 text-xs -mt-4">
+                    Memory image is required to add to list
+                  </p>
                 </>
               )}
 
+              {getFormValidation() == "false" ? (
+                <>{addMemoryButtonDisabled()}</>
+              ) : (
+                <>{addMemoryButton()}</>
+              )}
 
               <hr className="mb-10" />
 
@@ -349,7 +430,9 @@ const AddMemories = props => {
                 <></>
               ) : (
                 <>
-                  <p className="text-pink-500">(Add a Memory to the list to continue)</p>
+                  <p className="text-pink-500">
+                    (Add a Memory to the list to continue)
+                  </p>
                 </>
               )}
 
