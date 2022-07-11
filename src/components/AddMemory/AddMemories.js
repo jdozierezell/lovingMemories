@@ -11,10 +11,10 @@ import "antd/dist/antd.css"
 
 import { navigate } from "gatsby"
 
-import { Avatar, Spin, Card, Result, Button, Popconfirm } from "antd"
+import { Avatar, Spin, Card, Popconfirm } from "antd"
 import { IoIosAdd } from "react-icons/io"
 import { HiOutlinePlus } from "react-icons/hi"
-import { LoadingOutlined } from "@ant-design/icons"
+import { LoadingOutlined, ExclamationCircleOutlined } from "@ant-design/icons"
 import { handleAPIPost } from "../../utils/auth"
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons"
 
@@ -68,7 +68,7 @@ const getLocalStorageMaxSize = error => {
 const AddMemories = props => {
   const { state, actions } = useStateMachine({ updateAction })
 
-  const { register, handleSubmit, reset, setValue } = useForm({
+  const { register, handleSubmit, reset, setValue, getValues } = useForm({
     mode: "onChange",
   })
 
@@ -171,12 +171,12 @@ const AddMemories = props => {
     let fileLength
     const reader = new FileReader()
     reader.onloadend = result => {
-      setImageVal(result.target.result)
       fileLength = result.target.result.length
       if (result.target.result.length > getLocalStorageMaxSize()) {
         setAddImageError(true)
         return "false"
       }
+      setImageVal(result.target.result)
     }
     if (fileLength > getLocalStorageMaxSize()) {
       setAddImageError(true)
@@ -201,17 +201,19 @@ const AddMemories = props => {
 
   const renderButton = () => {
     return (
-      <div
-        onClick={goBack}
-        className="mt-10 md:mt-20 lg:mt-0 fixed bg-white md:flex items-center justify-center w-full bottom-0 text-center p-2 md:p-8 border-t-2 blur-sm bg-opacity-90"
-      >
-        <button
-          disabled={favorites.length < 1}
-          className="flex flex-wrap items-center mx-auto justify-between px-14 py-3 mt-2 mb-2 text-sm leading-none bg-transparent text-blue-600 border-2 border-blue-600 rounded-full hover:border-blue-600 hover:text-white hover:bg-blue-600 lg:mt-0 disabled:opacity-50"
+      <ErrorPop errorType={uploadError}>
+        <div
+          onClick={goBack}
+          className="mt-10 md:mt-20 lg:mt-0 fixed bg-white md:flex items-center justify-center w-full bottom-0 text-center p-2 md:p-8 border-t-2 blur-sm bg-opacity-90"
         >
-          Done
-        </button>
-      </div>
+          <button
+            disabled={favorites.length < 1}
+            className="flex flex-wrap items-center mx-auto justify-between px-14 py-3 mt-2 mb-2 text-sm leading-none bg-transparent text-blue-600 border-2 border-blue-600 rounded-full hover:border-blue-600 hover:text-white hover:bg-blue-600 lg:mt-0 disabled:opacity-50"
+          >
+            Done
+          </button>
+        </div>
+      </ErrorPop>
     )
   }
 
@@ -231,28 +233,67 @@ const AddMemories = props => {
 
   const confirm = e => {
     setAddImageError(false)
+    document.getElementById("image").value = ""
+    // const currentMemory = state.data.favorites[state.data.favorites.length - 1]
+    // console.log(currentMemory)
+    // currentMemory.image = ""
   }
 
   const addMemoryButton = () => {
     return (
       <div className="text-left mb-10">
         <button className=" flex flex-wrap items-start justify-between px-6 py-3 text-xs text-bold leading-none bg-transparent text-base text-afsp-blue hover:text-afsp-blue-dark lg:mt-0 ">
-          <HiOutlinePlus size={24} /> {console.log(addImageError)}
-          {addImageError && (
-            <Popconfirm
-              title="Are you sure to delete this task?"
-              okText="Yes"
-              onConfirm={confirm}
-              showCancel={false}
-            >
-              <span className="ml-2">Add your Memory to the list </span>
-            </Popconfirm>
-          )}
-          {!addImageError && (
-            <span className="ml-2">Add your Memory to the list </span>
-          )}
+          <HiOutlinePlus size={24} />
+          <span className="ml-2">Add your Memory to the list </span>
         </button>
       </div>
+    )
+  }
+
+  const ErrorPop = ({ children, errorType }) => {
+    console.log(errorType)
+    return (
+      <Popconfirm
+        title={
+          <div>
+            <p>
+              The image you are trying to upload exceeds
+              <br />
+              the maximum size allowed.
+            </p>
+            <p>
+              Please select a smaller image or try <br />
+              reducing your image's file size.
+              <br />
+              To do this, we recommend tools like{" "}
+              <a
+                href="https://jpeg.io"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                jpeg.io
+              </a>
+              .
+            </p>
+          </div>
+        }
+        icon={
+          <ExclamationCircleOutlined
+            style={{
+              color: "red",
+              fontSize: "1rem",
+              top: "0.6rem",
+            }}
+          />
+        }
+        placement="leftTop"
+        okText="Ok"
+        onConfirm={confirm}
+        showCancel={false}
+        visible={errorType ? true : false}
+      >
+        {children}
+      </Popconfirm>
     )
   }
 
@@ -292,17 +333,6 @@ const AddMemories = props => {
       spinning={loading}
       indicator={loadingIcon}
     >
-      {uploadError && (
-        <Result
-          status="warning"
-          title="There are some problems with your operation."
-          extra={
-            <Button type="primary" key="console">
-              Go Console
-            </Button>
-          }
-        />
-      )}
       <Header
         goBack={true}
         gobackUrl={"/in-memory-of"}
@@ -321,7 +351,6 @@ const AddMemories = props => {
 
               <div className="grid grid-cols-1 gap-10">
                 <div ref={messagesStartRef} />
-
                 <div className="w-full">
                   <textarea
                     maxLength={140}
@@ -350,36 +379,28 @@ const AddMemories = props => {
                   )}
                 </div>
                 <div className="w-full -mt-5 mb-8">
-                  <div className="flex flex-wrap">
-                    <button
-                      className="memory-fields-image-btn text-center mr-2 px-6 py-6 text-xs text-bold leading-none bg-transparent border-2 border-dashed border-gray-300 rounded-none"
-                      onClick={e => {
-                        e.preventDefault()
-                        fileInputRef.current.click()
-                      }}
-                    >
-                      <IoIosAdd className="mx-auto" size={30} />
-                      <p className="mt-2">
-                        Update <br /> Memory Photo
-                      </p>
-                    </button>
-                    {addImageError && (
-                      <Popconfirm
-                        title="Are you sure to delete this task?"
-                        okText="Yes"
-                        onConfirm={confirm}
-                        showCancel={false}
+                  <ErrorPop errorType={addImageError}>
+                    <div className="flex flex-wrap">
+                      <button
+                        disabled={addImageError ? true : false}
+                        className="memory-fields-image-btn text-center mr-2 px-6 py-6 text-xs text-bold leading-none bg-transparent border-2 border-dashed border-gray-300 rounded-none"
+                        onClick={e => {
+                          e.preventDefault()
+                          fileInputRef.current.click()
+                        }}
                       >
-                        <button
-                          className="text-center mx-0"
-                          onClick={e => {
-                            e.preventDefault()
-                            fileInputRef.current.click()
-                          }}
-                        ></button>
-                      </Popconfirm>
-                    )}
-                    {!addImageError && (
+                        <IoIosAdd className="mx-auto" size={30} />
+                        <p className="mt-2">
+                          Update <br /> Memory Photo
+                        </p>
+                      </button>
+                      <button
+                        className="text-center mx-0"
+                        onClick={e => {
+                          e.preventDefault()
+                          fileInputRef.current.click()
+                        }}
+                      ></button>
                       <button
                         className="text-center mx-0"
                         onClick={e => {
@@ -389,8 +410,8 @@ const AddMemories = props => {
                       >
                         <img className="w-auto h-40" src={imageVal} alt="" />
                       </button>
-                    )}
-                  </div>
+                    </div>
+                  </ErrorPop>
                   <input
                     ref={fileInputRef}
                     onChange={handleChangeInput}
