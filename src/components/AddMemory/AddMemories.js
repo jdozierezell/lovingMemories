@@ -201,7 +201,7 @@ const AddMemories = props => {
 
   const renderButton = () => {
     return (
-      <ErrorPop errorType={uploadError}>
+      <ErrorPop errorType={uploadError} resetErrorFunction={resetUploadError}>
         <div
           onClick={goBack}
           className="mt-10 md:mt-20 lg:mt-0 fixed bg-white md:flex items-center justify-center w-full bottom-0 text-center p-2 md:p-8 border-t-2 blur-sm bg-opacity-90"
@@ -231,12 +231,13 @@ const AddMemories = props => {
     )
   }
 
-  const confirm = e => {
+  const resetAddImageError = e => {
     setAddImageError(false)
     document.getElementById("image").value = ""
-    // const currentMemory = state.data.favorites[state.data.favorites.length - 1]
-    // console.log(currentMemory)
-    // currentMemory.image = ""
+  }
+
+  const resetUploadError = e => {
+    setUploadError(false)
   }
 
   const addMemoryButton = () => {
@@ -250,8 +251,7 @@ const AddMemories = props => {
     )
   }
 
-  const ErrorPop = ({ children, errorType }) => {
-    console.log(errorType)
+  const ErrorPop = ({ children, errorType, resetErrorFunction }) => {
     return (
       <Popconfirm
         title={
@@ -288,7 +288,7 @@ const AddMemories = props => {
         }
         placement="leftTop"
         okText="Ok"
-        onConfirm={confirm}
+        onConfirm={resetErrorFunction}
         showCancel={false}
         visible={errorType ? true : false}
       >
@@ -379,7 +379,10 @@ const AddMemories = props => {
                   )}
                 </div>
                 <div className="w-full -mt-5 mb-8">
-                  <ErrorPop errorType={addImageError}>
+                  <ErrorPop
+                    errorType={addImageError}
+                    resetErrorFunction={resetAddImageError}
+                  >
                     <div className="flex flex-wrap">
                       <button
                         disabled={addImageError ? true : false}
