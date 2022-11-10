@@ -76,8 +76,8 @@ const IndexPage = () => {
               </h1>
 
               <p className="my-5 md:my-10 text-center lg:text-left max-w-lg">
-                The digital quilt is where suicide loss survivors can honor and
-                share stories about their loved ones.
+                Loving Memories is a space where suicide loss survivors can
+                honor and share stories about their loved ones.
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-1">

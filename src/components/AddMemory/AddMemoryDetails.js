@@ -273,14 +273,14 @@ const AddMemoryDetails = props => {
           </div>
 
           <div className="order-1 lg:order-2 pt-0 md:pt-20 ">
-            <SideComponent text1="The Digital Memory Quilt is an online space where you can honor and share stories of your loved ones, Lorem Ipsum is simply dummy text of the printing and typesetting industry." />
+            <SideComponent text1="Loving Memories is an online space where you can honor and share stories of your loved ones." />
           </div>
 
           <InfoModalComp
             isVisible={false}
             bottom={"mb-20"}
             text1={
-              "The Digital Memory Quilt is an online space where you can honor and share stories of your loved ones, Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+              "Loving Memories is an online space where you can honor and share stories of your loved ones."
             }
             text2={""}
           ></InfoModalComp>
